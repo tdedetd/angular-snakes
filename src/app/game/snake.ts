@@ -1,7 +1,7 @@
-import { Coord } from './models/coord.model';
 import { Directions } from './enums/directions.enum';
+import { Point } from './models/point.model';
 
-const headMoveMapper: Record<Directions, (coord: Coord) => Coord> = {
+const headMoveMapper: Record<Directions, (coord: Point) => Point> = {
   [Directions.Up]: (coord) => [coord[0], coord[1] - 1],
   [Directions.Down]: (coord) => [coord[0], coord[1] - 1],
   [Directions.Left]: (coord) => [coord[0] - 1, coord[1]],
@@ -9,12 +9,12 @@ const headMoveMapper: Record<Directions, (coord: Coord) => Coord> = {
 };
 
 export class Snake {
-  public get head(): Coord {
+  public get head(): Point {
     return this.parts[0];
   }
 
   constructor(
-    public readonly parts: Coord[],
+    public readonly parts: Point[],
     public readonly color: string,
     private direction: Directions,
   ) {
@@ -37,7 +37,13 @@ export class Snake {
   }
 
   public turn(direction: Directions): void {
-    // TODO: restrict opposite direction
-    this.direction = direction;
+    if (!(
+      this.direction === Directions.Up && direction === Directions.Down ||
+      this.direction === Directions.Down && direction === Directions.Up ||
+      this.direction === Directions.Left && direction === Directions.Right ||
+      this.direction === Directions.Right && direction === Directions.Left
+    )) {
+      this.direction = direction;
+    }
   }
 }
