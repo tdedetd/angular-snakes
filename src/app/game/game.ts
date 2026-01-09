@@ -40,7 +40,10 @@ export class Game {
     this.players = generatePlayers(config.players, config.width, config.height);
     this.playersStateChangeEvent = new BehaviorSubject(toPlayersDisplayInfo(this.players));
 
-    this._apples = Array(config.applesCount ?? 1).fill(this.generateApple());
+    for (let i = 0; i < (config.applesCount ?? 1); i++) {
+      const apple = this.generateApple();
+      this._apples.push(apple);
+    }
 
     this.notAiPlayerIndex = config.players.findIndex(({ notAi }) => notAi);
 

@@ -5,6 +5,9 @@ import { Point } from '../../models/point.model';
 import { Snake } from '../../snake';
 
 export function generatePlayers(players: PlayerConfig[], width: number, height: number): Player[] {
+  const playersOnSide = Math.ceil(players.length / 2);
+  const spawnVerticalInterval = Math.floor(height / playersOnSide);
+
   return players.map((player, i) => {
     const y = i;
 

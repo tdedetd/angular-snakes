@@ -15,7 +15,7 @@ export class App {
     const gameService = inject(GameService);
 
     effect(() => {
-      gameService.start({
+      gameService.newGame({
         width: 40,
         height: 40,
         players: [
