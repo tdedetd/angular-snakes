@@ -1,4 +1,5 @@
 import { getDistance } from '../utils/get-distance';
+import { Directions } from './enums/directions.enum';
 import { Game } from './game';
 import { Player } from './models/player.model';
 import { Point } from './models/point.model';
@@ -19,6 +20,14 @@ interface TraceInfo {
 }
 
 export class Ai {
+  public get color(): string {
+    return this.player.snake.color;
+  }
+
+  public get isOut(): boolean {
+    return this.player.isOut;
+  }
+
   constructor(private game: Game, private player: Player) {}
 
   public handleControl(): void {
@@ -27,12 +36,26 @@ export class Ai {
     }
 
     const path = this.getPath();
+    if (path && path[0]) {
+      const targetPoint = path[0];
+      const snake = this.player.snake;
+      const head = snake.head;
+      if (isSamePoint(targetPoint, { x: head.x - 1, y: head.y })) {
+        snake.turn(Directions.Left);
+      } else if (isSamePoint(targetPoint, { x: head.x + 1, y: head.y })) {
+        snake.turn(Directions.Right);
+      } else if (isSamePoint(targetPoint, { x: head.x, y: head.y - 1 })) {
+        snake.turn(Directions.Up);
+      } else if (isSamePoint(targetPoint, { x: head.x, y: head.y + 1 })) {
+        snake.turn(Directions.Down);
+      }
+    }
   }
 
   public getPath(): Point[] | null {
     const head = this.player.snake.head;
 
-    const pathes = this.game.apples.map((apple) => {
+    const paths = this.game.apples.map((apple) => {
       const checkedNodes = this.getCheckedNodes();
       return this.tracePath(head, 0, {
         apple,
@@ -40,7 +63,7 @@ export class Ai {
         solutionHasFound: false,
       });
     }).filter((path) => path !== null);
-    return pathes.sort((a, b) => a.length - b.length)[0] ?? null;
+    return paths.sort((a, b) => a.length - b.length)[0] ?? null;
   }
 
   private tracePath(point: Point, value: number, traceInfo: TraceInfo): Point[] | null {
@@ -55,7 +78,7 @@ export class Ai {
       { x: point.x, y: point.y + 1 },
     ] as Point[])
       .map((point): [Point, TraceNodeId] => [point, getTraceNodeId(point)])
-      .filter((record) => !traceInfo.checkedNodes.includes(record[1]))
+      .filter((record) => !traceInfo.checkedNodes.includes(record[1]) && !this.game.isPointOutside(record[0]))
       .map((record): TraceNodeInfo => ({
         point: record[0],
         nodeId: record[1],
@@ -72,13 +95,13 @@ export class Ai {
     const solutions = pointsToCheck.map((pointToCheck) => {
       if (isSamePoint(pointToCheck.point, traceInfo.apple)) {
         traceInfo.solutionHasFound = true;
-        return [point];
+        return [pointToCheck.point];
       } else {
-        const remainingPath = this.tracePath(point, value + 1, traceInfo);
-        return remainingPath ? [point, ...remainingPath] : null;
+        const remainingPath = this.tracePath(pointToCheck.point, value + 1, traceInfo);
+        return remainingPath ? [pointToCheck.point, ...remainingPath] : null;
       }
     }).filter((solution) => solution !== null);
-    return solutions.sort((a, b) => a.length - b.length)[0];
+    return solutions.length ? solutions.sort((a, b) => a.length - b.length)[0] : null;
   }
 
   private getCheckedNodes(): TraceNodeId[] {

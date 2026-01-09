@@ -62,9 +62,10 @@ export class Canvas {
     const game = untracked(() => gameService.game());
     const ctx = untracked(() => this.ctx());
     const canvasEl = untracked(() => this.canvasEl());
+    const ais = gameService.ais;
 
     if (game && ctx && canvasEl) {
-      drawField(game, ctx, canvasEl);
+      drawField(game, ctx, canvasEl, ais);
     }
   }
 }

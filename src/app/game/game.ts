@@ -89,18 +89,22 @@ export class Game {
       return false;
     }
 
-    if (
-      point.x < 0 ||
-      point.x >= this.width ||
-      point.y < 0 ||
-      point.y >= this.height
-    ) {
+    if (this.isPointOutside(point)) {
       return false;
     }
 
     return !this.remainingPlayers
       .map(({ snake }) => snake)
       .some((snake) => snake.parts.some((part) => isSamePoint(point, part)));
+  }
+
+  public isPointOutside(point: Point): boolean {
+    return (
+      point.x < 0 ||
+      point.x >= this.width ||
+      point.y < 0 ||
+      point.y >= this.height
+    );
   }
 
   private handleAppleCollision(player: Player, apple: Point): boolean {

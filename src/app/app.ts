@@ -19,13 +19,14 @@ export class App {
         width: 40,
         height: 40,
         players: [
-          { name: 'Player 1', color: '#d10b0b', notAi: true },
-          { name: 'Player 2', color: '#2d1cea', notAi: true },
-          { name: 'Player 3', color: '#f5ff87', notAi: true },
-          { name: 'Player 4', color: '#8c0cdc', notAi: true },
-          { name: 'Player 5', color: '#0d9e00', notAi: true },
-          { name: 'Player 6', color: '#fade27', notAi: true },
+          { name: 'Player 1', color: '#d10b0b', notAi: false },
+          { name: 'Player 2', color: '#2d1cea', notAi: false },
+          { name: 'Player 3', color: '#f5ff87', notAi: false },
+          { name: 'Player 4', color: '#8c0cdc', notAi: false },
+          { name: 'Player 5', color: '#0d9e00', notAi: false },
+          { name: 'Player 6', color: '#fade27', notAi: false },
         ],
+        applesCount: 3,
       });
     });
   }
