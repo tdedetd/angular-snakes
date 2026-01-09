@@ -4,4 +4,5 @@ export interface GameConfig {
   width: number;
   height: number;
   players: PlayerConfig[];
+  applesCount?: number;
 }

@@ -2,10 +2,10 @@ import { Directions } from './enums/directions.enum';
 import { Point } from './models/point.model';
 
 const headMoveMapper: Record<Directions, (coord: Point) => Point> = {
-  [Directions.Up]: (coord) => [coord[0], coord[1] - 1],
-  [Directions.Down]: (coord) => [coord[0], coord[1] - 1],
-  [Directions.Left]: (coord) => [coord[0] - 1, coord[1]],
-  [Directions.Right]: (coord) => [coord[0] + 1, coord[1]],
+  [Directions.Up]: (head) => ({ x: head.x, y: head.y - 1 }),
+  [Directions.Down]: (head) => ({ x: head.x, y: head.y + 1 }),
+  [Directions.Left]: (head) => ({ x: head.x - 1, y: head.y }),
+  [Directions.Right]: (head) => ({ x: head.x + 1, y: head.y }),
 };
 
 export class Snake {
