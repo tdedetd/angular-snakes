@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { randomInterval } from '../utils/random-interval';
 import { GameConfig } from './models/game-config.model';
 import { Player } from './models/player.model';
@@ -8,6 +8,7 @@ import { isSamePoint } from './utils/functions/is-same-point';
 import { PlayerDisplayInfo } from './models/player-display-info.model';
 import { toPlayersDisplayInfo } from './utils/functions/to-players-display-info';
 import { removeElementFromArray } from '../utils/remove-element-from-array';
+import { Snake } from './snake';
 
 export class Game {
   public readonly width: number;
@@ -64,7 +65,7 @@ export class Game {
         appleHasBeenEaten = this.handleAppleCollision(player, apple) || appleHasBeenEaten;
       });
 
-      const isCurrentPlayerCollides = this.checkPlayerCollision(player);
+      const isCurrentPlayerCollides = this.checkSnakeCollision(player.snake);
       if (isCurrentPlayerCollides) {
         playersToOut.push(player);
       }
@@ -120,17 +121,14 @@ export class Game {
     return false;
   }
 
-  private checkPlayerCollision(player: Player): boolean {
-    const head = player.snake.head;
+  private checkSnakeCollision(snake: Snake): boolean {
+    const head = snake.head;
     const collisions = this.remainingPlayers.flatMap(
       (player) => player.snake.parts.filter((part) => isSamePoint(part, head))
     );
     const hasCollision = (
       removeElementFromArray(collisions, head).length > 0 ||
-      head.x < 0 ||
-      head.x >= this.width ||
-      head.y < 0 ||
-      head.y >= this.height
+      this.isPointOutside(head)
     );
 
     return hasCollision;
