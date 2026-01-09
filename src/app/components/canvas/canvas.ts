@@ -32,29 +32,28 @@ export class Canvas {
     const window = inject(WINDOW);
     const destroyRef = inject(DestroyRef);
 
-    effect(() => {
-      gameService.getTickObservable().pipe(
-        takeUntilDestroyed(destroyRef),
-      ).subscribe(() => {
-        this.handleRedraw(gameService);
-      });
-
-      this.handleRedraw(gameService);
-    });
-
     effect((cleanup) => {
       const canvasEl = this.canvasEl();
       const subscription = canvasEl
         ? fromEvent(window, 'resize')
-          .pipe(debounceTime(500), startWith(null))
+          .pipe(debounceTime(200), startWith(null))
           .subscribe(() => {
             canvasEl.width = Math.floor(canvasEl.clientWidth);
             canvasEl.height = Math.floor(canvasEl.clientHeight);
+            this.handleRedraw(gameService);
           })
         : null;
 
       cleanup(() => {
         subscription?.unsubscribe();
+      });
+    });
+
+    effect(() => {
+      gameService.getTickObservable().pipe(
+        takeUntilDestroyed(destroyRef),
+      ).subscribe(() => {
+        this.handleRedraw(gameService);
       });
     });
   }
