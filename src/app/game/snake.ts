@@ -13,10 +13,14 @@ export class Snake {
     return this.parts[0];
   }
 
+  public get direction(): Directions {
+    return this._direction;
+  }
+
   constructor(
     public readonly parts: Point[],
     public readonly color: string,
-    private direction: Directions,
+    private _direction: Directions,
   ) {
     if (parts.length === 0) {
       throw new Error('parts length is 0');
@@ -28,7 +32,7 @@ export class Snake {
       this.parts[i] = this.parts[i - 1];
     }
 
-    this.parts[0] = headMoveMapper[this.direction](this.head);
+    this.parts[0] = headMoveMapper[this._direction](this.head);
   }
 
   public grow(): void {
@@ -38,12 +42,12 @@ export class Snake {
 
   public turn(direction: Directions): void {
     if (!(
-      this.direction === Directions.Up && direction === Directions.Down ||
-      this.direction === Directions.Down && direction === Directions.Up ||
-      this.direction === Directions.Left && direction === Directions.Right ||
-      this.direction === Directions.Right && direction === Directions.Left
+      this._direction === Directions.Up && direction === Directions.Down ||
+      this._direction === Directions.Down && direction === Directions.Up ||
+      this._direction === Directions.Left && direction === Directions.Right ||
+      this._direction === Directions.Right && direction === Directions.Left
     )) {
-      this.direction = direction;
+      this._direction = direction;
     }
   }
 }

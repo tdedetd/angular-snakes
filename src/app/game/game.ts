@@ -33,6 +33,10 @@ export class Game {
     return this.players.filter(({ isOut }) => !isOut);
   }
 
+  public get aiPlayers(): Player[] {
+    return this.players.filter((_, i) => i !== this.notAiPlayerIndex);
+  }
+
   constructor(config: GameConfig) {
     this.width = config.width;
     this.height = config.height;
@@ -64,7 +68,7 @@ export class Game {
         appleHasBeenEaten = this.handleAppleCollision(player, apple) || appleHasBeenEaten;
       });
 
-      const isCurrentPlayerCollides = this.checkCollision(player);
+      const isCurrentPlayerCollides = this.checkPlayerCollision(player);
       if (isCurrentPlayerCollides) {
         playersToOut.push(player);
       }
@@ -91,6 +95,25 @@ export class Game {
     return this.playersStateChangeEvent.asObservable();
   }
 
+  public isCellFree(point: Point, considerApples: boolean): boolean {
+    if (considerApples && this.apples.some((apple) => isSamePoint(point, apple))) {
+      return false;
+    }
+
+    if (
+      point.x < 0 ||
+      point.x >= this.width ||
+      point.y < 0 ||
+      point.y >= this.height
+    ) {
+      return false;
+    }
+
+    return !this.remainingPlayers
+      .map(({ snake }) => snake)
+      .some((snake) => snake.parts.some((part) => isSamePoint(point, part)));
+  }
+
   private handleAppleCollision(player: Player, apple: Point): boolean {
     const snake = player.snake;
 
@@ -104,7 +127,7 @@ export class Game {
     return false;
   }
 
-  private checkCollision(player: Player): boolean {
+  private checkPlayerCollision(player: Player): boolean {
     const head = player.snake.head;
     const collisions = this.remainingPlayers.flatMap(
       (player) => player.snake.parts.filter((part) => isSamePoint(part, head))
@@ -129,22 +152,12 @@ export class Game {
 
   private generateApple(): Point {
     let newApple: Point | null = null;
-    while (!newApple || !this.isCellFree(newApple)) {
+    while (!newApple || !this.isCellFree(newApple, true)) {
       newApple = {
         x: Math.floor(randomInterval(0, this.width)),
         y: Math.floor(randomInterval(0, this.height)),
       };
     }
     return newApple;
-  }
-
-  private isCellFree(point: Point): boolean {
-    if (this.apples.some((apple) => isSamePoint(point, apple))) {
-      return false;
-    }
-
-    return !this.remainingPlayers
-      .map(({ snake }) => snake)
-      .some((snake) => snake.parts.some((part) => isSamePoint(point, part)));
   }
 }
