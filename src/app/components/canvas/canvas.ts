@@ -32,6 +32,10 @@ export class Canvas {
     const window = inject(WINDOW);
     const destroyRef = inject(DestroyRef);
 
+    if (!this.isBrowser) {
+      return;
+    }
+
     effect((cleanup) => {
       const canvasEl = this.canvasEl();
       const subscription = canvasEl

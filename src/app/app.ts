@@ -26,7 +26,7 @@ export class App {
           { name: 'Player 5', color: '#0d9e00', notAi: false },
           { name: 'Player 6', color: '#fade27', notAi: false },
         ],
-        applesCount: 3,
+        applesCount: 2,
       });
     });
   }

@@ -1,4 +1,4 @@
-import { getDistance } from '../utils/get-distance';
+import { getDistanceCells } from '../utils/get-distance-cells';
 import { Directions } from './enums/directions.enum';
 import { Game } from './game';
 import { Player } from './models/player.model';
@@ -82,7 +82,7 @@ export class Ai {
       .map((record): TraceNodeInfo => ({
         point: record[0],
         nodeId: record[1],
-        totalValue: value + getDistance(record[0], traceInfo.apple),
+        totalValue: value + getDistanceCells(record[0], traceInfo.apple),
       }))
       .sort((a, b) => a.totalValue - b.totalValue);
     
