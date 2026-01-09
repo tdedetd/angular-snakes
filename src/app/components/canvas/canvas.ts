@@ -1,9 +1,9 @@
 import { Component, computed, effect, ElementRef, inject, untracked, viewChild } from '@angular/core';
 import { GameService } from '../../services/game.service';
 import { IsBrowserToken } from '../../tokens/is-browser.token';
-import { Game } from '../../game/game';
 import { WINDOW } from '../../tokens/window.token';
 import { debounceTime, fromEvent, startWith } from 'rxjs';
+import { drawField } from './utils/draw-field';
 
 @Component({
   selector: 'app-canvas',
@@ -40,7 +40,7 @@ export class Canvas {
       const canvasEl = untracked(() => this.canvasEl());
 
       if (game && ctx && canvasEl) {
-        this.redraw(game, ctx, canvasEl);
+        drawField(game, ctx, canvasEl);
       }
     });
 
@@ -58,31 +58,6 @@ export class Canvas {
       cleanup(() => {
         subscription?.unsubscribe();
       });
-    });
-  }
-
-  private redraw(
-    game: Game,
-    ctx: CanvasRenderingContext2D,
-    canvasEl: HTMLCanvasElement
-  ): void {
-    const cellLength = 20;
-
-    ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(-1, -1, game.width * cellLength + 2, game.height * cellLength + 2);
-
-    game.remainingPlayers.forEach(({ snake }) => {
-      ctx.fillStyle = snake.color;
-      snake.parts.forEach(
-        (part) => ctx.fillRect(part.x * cellLength, part.y * cellLength, cellLength, cellLength)
-      );
-    });
-
-    ctx.fillStyle = '#87e47f';
-    game.apples.forEach((apple) => {
-      ctx.fillRect(apple.x * cellLength, apple.y * cellLength, cellLength, cellLength)
     });
   }
 }

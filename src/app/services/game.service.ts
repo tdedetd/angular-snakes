@@ -11,7 +11,7 @@ import { Ai } from '../game/ai';
 export class GameService {
   private _game = new BehaviorSubject<Game | null>(null);
   private intervalId: number | null = null;
-  private ais: Ai[] = [];
+  private _ais: Ai[] = [];
 
   public playersState = toSignal(
     this._game.pipe(switchMap(
@@ -27,9 +27,13 @@ export class GameService {
 
   public game = toSignal(this._game, { initialValue: null });
 
+  public get ais(): Ai[] {
+    return this._ais;
+  }
+
   public newGame(config: GameConfig): void {
     const game = new Game(config);
-    this.ais = game.aiPlayers.map((player) => new Ai(game, player));
+    this._ais = game.aiPlayers.map((player) => new Ai(game, player));
     this._game.next(game);
 
     this.stop();
@@ -41,7 +45,7 @@ export class GameService {
 
     if (game) {
       this.intervalId = setInterval(() => {
-        this.ais.forEach((ai) => {
+        this._ais.forEach((ai) => {
           ai.handleControl();
         });
         game.tick();

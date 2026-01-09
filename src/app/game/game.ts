@@ -50,8 +50,6 @@ export class Game {
     }
 
     this.notAiPlayerIndex = config.players.findIndex(({ notAi }) => notAi);
-
-    this.tickEvent.next(this.moves);
   }
 
   public tick(): void {
