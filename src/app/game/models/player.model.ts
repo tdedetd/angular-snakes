@@ -1,8 +1,9 @@
 import { Snake } from '../snake';
 
 export interface Player {
+  id: string;
   snake: Snake;
-  name: number;
+  name: string;
   points: number;
   isOut: boolean;
 }

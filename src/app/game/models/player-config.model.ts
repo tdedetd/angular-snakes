@@ -1,5 +1,5 @@
 export interface PlayerConfig {
-  name: number;
+  name: string;
   color: string;
-  isAi: boolean;
+  notAi: boolean;
 }

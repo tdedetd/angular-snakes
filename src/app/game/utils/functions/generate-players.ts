@@ -24,10 +24,15 @@ export function generatePlayers(players: PlayerConfig[], width: number, height: 
     const snake = new Snake(parts, player.color, Directions.Right);
 
     return {
+      id: genId(),
       name: player.name,
       points: 0,
       isOut: false,
       snake,
     };
   });
+}
+
+function genId(): string {
+  return String(Math.random()).split('.')[1];
 }
