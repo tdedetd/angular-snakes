@@ -1,9 +1,10 @@
-import { Component, computed, effect, ElementRef, inject, untracked, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, effect, ElementRef, inject, untracked, viewChild } from '@angular/core';
 import { GameService } from '../../services/game.service';
 import { IsBrowserToken } from '../../tokens/is-browser.token';
 import { WINDOW } from '../../tokens/window.token';
 import { debounceTime, fromEvent, startWith } from 'rxjs';
 import { drawField } from './utils/draw-field';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-canvas',
@@ -29,19 +30,16 @@ export class Canvas {
   constructor() {
     const gameService = inject(GameService);
     const window = inject(WINDOW);
-
-    const tickSignal = gameService.tick;
-    const gameSignal = gameService.game;
+    const destroyRef = inject(DestroyRef);
 
     effect(() => {
-      tickSignal();
-      const game = gameSignal();
-      const ctx = this.ctx();
-      const canvasEl = untracked(() => this.canvasEl());
+      gameService.getTickObservable().pipe(
+        takeUntilDestroyed(destroyRef),
+      ).subscribe(() => {
+        this.handleRedraw(gameService);
+      });
 
-      if (game && ctx && canvasEl) {
-        drawField(game, ctx, canvasEl);
-      }
+      this.handleRedraw(gameService);
     });
 
     effect((cleanup) => {
@@ -59,5 +57,15 @@ export class Canvas {
         subscription?.unsubscribe();
       });
     });
+  }
+
+  private handleRedraw(gameService: GameService): void {
+    const game = untracked(() => gameService.game());
+    const ctx = untracked(() => this.ctx());
+    const canvasEl = untracked(() => this.canvasEl());
+
+    if (game && ctx && canvasEl) {
+      drawField(game, ctx, canvasEl);
+    }
   }
 }

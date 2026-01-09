@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Game } from '../game/game';
 import { GameConfig } from '../game/models/game-config.model';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { BehaviorSubject, of, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, switchMap } from 'rxjs';
 import { Ai } from '../game/ai';
 
 @Injectable({
@@ -10,18 +10,13 @@ import { Ai } from '../game/ai';
 })
 export class GameService {
   private _game = new BehaviorSubject<Game | null>(null);
+  private _tick = new Subject<void>();
   private intervalId: number | null = null;
   private _ais: Ai[] = [];
 
   public playersState = toSignal(
     this._game.pipe(switchMap(
       (game) => game ? game.getPlayersStateChangeObservable() : of(undefined)
-    ))
-  );
-
-  public tick = toSignal(
-    this._game.pipe(switchMap(
-      (game) => game ? game.getTickObservable() : of(undefined)
     ))
   );
 
@@ -49,6 +44,7 @@ export class GameService {
           ai.handleControl();
         });
         game.tick();
+        this._tick.next();
 
         if (game.isGameover) {
           this.stop();
@@ -61,5 +57,9 @@ export class GameService {
     if (this.intervalId !== null) {
       clearInterval(this.intervalId);
     }
+  }
+
+  public getTickObservable(): Observable<void> {
+    return this._tick.asObservable();
   }
 }

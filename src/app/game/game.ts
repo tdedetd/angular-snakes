@@ -16,9 +16,7 @@ export class Game {
   private readonly players: Player[];
   private _apples: Point[] = [];
   private notAiPlayerIndex: number;
-  private moves = 0;
 
-  private tickEvent = new Subject<number>();
   private playersStateChangeEvent: BehaviorSubject<PlayerDisplayInfo[]>;
 
   public get apples(): Point[] {
@@ -80,13 +78,6 @@ export class Game {
     if (appleHasBeenEaten || hasCollisionWithSnakes) {
       this.playersStateChangeEvent.next(toPlayersDisplayInfo(this.players));
     }
-
-    this.moves++;
-    this.tickEvent.next(this.moves);
-  }
-
-  public getTickObservable(): Observable<number> {
-    return this.tickEvent.asObservable();
   }
 
   public getPlayersStateChangeObservable(): Observable<PlayerDisplayInfo[]> {
