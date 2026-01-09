@@ -54,6 +54,8 @@ export class Game {
     let appleHasBeenEaten = false;
     let hasCollisionWithSnakes = false;
 
+    const playersToOut: Player[] = [];
+
     this.remainingPlayers.forEach((player) => {
       const snake = player.snake;
       snake.move();
@@ -62,7 +64,15 @@ export class Game {
         appleHasBeenEaten = this.handleAppleCollision(player, apple) || appleHasBeenEaten;
       });
 
-      hasCollisionWithSnakes = this.handleCollision(player) || hasCollisionWithSnakes;
+      const isCurrentPlayerCollides = this.checkCollision(player);
+      if (isCurrentPlayerCollides) {
+        playersToOut.push(player);
+      }
+      hasCollisionWithSnakes = isCurrentPlayerCollides || hasCollisionWithSnakes;
+    });
+
+    playersToOut.forEach((player) => {
+      player.isOut = true;
     });
 
     if (appleHasBeenEaten || hasCollisionWithSnakes) {
@@ -94,7 +104,7 @@ export class Game {
     return false;
   }
 
-  private handleCollision(player: Player): boolean {
+  private checkCollision(player: Player): boolean {
     const head = player.snake.head;
     const collisions = this.remainingPlayers.flatMap(
       (player) => player.snake.parts.filter((part) => isSamePoint(part, head))
@@ -106,10 +116,6 @@ export class Game {
       head.y < 0 ||
       head.y >= this.height
     );
-
-    if (hasCollision) {
-      player.isOut = true;
-    }
 
     return hasCollision;
   }
