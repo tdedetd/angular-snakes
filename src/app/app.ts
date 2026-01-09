@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { Canvas } from './components/canvas/canvas';
+import { GameService } from './services/game.service';
 
 @Component({
   selector: 'app-root',
@@ -9,4 +10,23 @@ import { Canvas } from './components/canvas/canvas';
 })
 export class App {
   protected readonly title = signal('angular-snakes');
+
+  constructor() {
+    const gameService = inject(GameService);
+
+    effect(() => {
+      gameService.start({
+        width: 40,
+        height: 40,
+        players: [
+          { name: 'Player 1', color: '#d10b0b', notAi: true },
+          { name: 'Player 2', color: '#2d1cea', notAi: true },
+          { name: 'Player 3', color: '#f5ff87', notAi: true },
+          { name: 'Player 4', color: '#8c0cdc', notAi: true },
+          { name: 'Player 5', color: '#0d9e00', notAi: true },
+          { name: 'Player 6', color: '#fade27', notAi: true },
+        ],
+      });
+    });
+  }
 }

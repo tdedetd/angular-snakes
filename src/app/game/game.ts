@@ -1,4 +1,4 @@
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { randomInterval } from '../utils/random-interval';
 import { GameConfig } from './models/game-config.model';
 import { Player } from './models/player.model';
@@ -15,9 +15,11 @@ export class Game {
 
   private readonly players: Player[];
   private _apples: Point[] = [];
-  private tickEvent = new Subject<void>();
-  private playersStateChangeEvent = new Subject<PlayerDisplayInfo[]>();
   private notAiPlayerIndex: number;
+  private moves = 0;
+
+  private tickEvent = new Subject<number>();
+  private playersStateChangeEvent: BehaviorSubject<PlayerDisplayInfo[]>;
 
   public get apples(): Point[] {
     return this._apples;
@@ -31,13 +33,18 @@ export class Game {
     return this.players.filter(({ isOut }) => !isOut);
   }
 
-  constructor(width: number, height: number, config: GameConfig) {
-    this.width = width;
-    this.height = height;
-    this.players = generatePlayers(config.players, width, height);
+  constructor(config: GameConfig) {
+    this.width = config.width;
+    this.height = config.height;
+
+    this.players = generatePlayers(config.players, config.width, config.height);
+    this.playersStateChangeEvent = new BehaviorSubject(toPlayersDisplayInfo(this.players));
 
     this._apples = Array(config.applesCount ?? 1).fill(this.generateApple());
+
     this.notAiPlayerIndex = config.players.findIndex(({ notAi }) => notAi);
+
+    this.tickEvent.next(this.moves);
   }
 
   public tick(): void {
@@ -59,14 +66,15 @@ export class Game {
       this.playersStateChangeEvent.next(toPlayersDisplayInfo(this.players));
     }
 
-    this.tickEvent.next();
+    this.moves++;
+    this.tickEvent.next(this.moves);
   }
 
-  public getTickObservable(): Observable<void> {
+  public getTickObservable(): Observable<number> {
     return this.tickEvent.asObservable();
   }
 
-  public getPlayersStateChangeEvent(): Observable<PlayerDisplayInfo[]> {
+  public getPlayersStateChangeObservable(): Observable<PlayerDisplayInfo[]> {
     return this.playersStateChangeEvent.asObservable();
   }
 
@@ -114,8 +122,8 @@ export class Game {
     let newApple: Point | null = null;
     while (!newApple || !this.isCellFree(newApple)) {
       newApple = {
-        x: randomInterval(0, this.width),
-        y: randomInterval(0, this.height),
+        x: Math.floor(randomInterval(0, this.width)),
+        y: Math.floor(randomInterval(0, this.height)),
       };
     }
     return newApple;
