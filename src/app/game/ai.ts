@@ -20,6 +20,13 @@ interface TraceInfo {
 }
 
 export class Ai {
+  public readonly debugInfo = {
+    deadEnds: 0,
+    deadEndOuts: 0,
+  };
+
+  private isDeadEnd = false;
+
   public get color(): string {
     return this.player.snake.color;
   }
@@ -37,6 +44,10 @@ export class Ai {
 
     const path = this.getPath();
     if (path && path[0]) {
+      if (this.isDeadEnd) {
+        this.debugInfo.deadEndOuts++;
+      }
+
       const targetPoint = path[0];
       const snake = this.player.snake;
       const head = snake.head;
@@ -49,8 +60,14 @@ export class Ai {
       } else if (isSamePoint(targetPoint, { x: head.x, y: head.y + 1 })) {
         snake.turn(Directions.Down);
       }
+
+      this.isDeadEnd = false;
     } else {
-      console.info(`%csave mode "${this.player.name}"`, `color: ${this.color}`);
+      if (!this.isDeadEnd) {
+        this.debugInfo.deadEnds++;
+        console.info(`%cdead end "${this.player.name}"`, `color: ${this.color}`);
+      }
+      this.isDeadEnd = true;
     }
   }
 

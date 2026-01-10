@@ -59,6 +59,7 @@ export class GameService {
 
         if (game.isGameover) {
           this.stop();
+          this.displayAiDebugInfo(this._ais);
         }
       }, 100, null);
     }
@@ -76,5 +77,16 @@ export class GameService {
 
   public getTickObservable(): Observable<void> {
     return this._tick.asObservable();
+  }
+
+  private displayAiDebugInfo(ais: Ai[]): void {
+    const aisDebugInfo = ais.reduce((acc, ai) => {
+      return {
+        ...acc,
+        deadEnds: acc.deadEnds + ai.debugInfo.deadEnds,
+        deadEndOuts: acc.deadEndOuts + ai.debugInfo.deadEndOuts,
+      };
+    }, { deadEnds: 0, deadEndOuts: 0 });
+    console.debug(JSON.stringify(aisDebugInfo) + ',');
   }
 }
