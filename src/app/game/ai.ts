@@ -49,6 +49,8 @@ export class Ai {
       } else if (isSamePoint(targetPoint, { x: head.x, y: head.y + 1 })) {
         snake.turn(Directions.Down);
       }
+    } else {
+      console.info(`%csave mode "${this.player.name}"`, `color: ${this.color}`);
     }
   }
 

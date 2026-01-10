@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Game } from '../game/game';
 import { GameConfig } from '../game/models/game-config.model';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, Observable, of, Subject, switchMap } from 'rxjs';
 import { Ai } from '../game/ai';
+import { IsBrowserToken } from '../tokens/is-browser.token';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +14,8 @@ export class GameService {
   private _tick = new Subject<void>();
   private intervalId: number | null = null;
   private _ais: Ai[] = [];
+
+  private isBrowser = inject(IsBrowserToken);
 
   public playersState = toSignal(
     this._game.pipe(switchMap(
@@ -27,6 +30,10 @@ export class GameService {
   }
 
   public newGame(config: GameConfig): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     const game = new Game(config);
     this._ais = game.aiPlayers.map((player) => new Ai(game, player));
     this._game.next(game);
@@ -36,6 +43,10 @@ export class GameService {
   }
 
   public start(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     const game = this._game.getValue();
 
     if (game) {
@@ -54,6 +65,10 @@ export class GameService {
   }
 
   public stop(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     if (this.intervalId !== null) {
       clearInterval(this.intervalId);
     }

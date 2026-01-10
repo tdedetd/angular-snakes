@@ -53,7 +53,7 @@ export class Game {
 
   public tick(): void {
     let appleHasBeenEaten = false;
-    let hasCollisionWithSnakes = false;
+    let hasCollision = false;
 
     const playersToOut: Player[] = [];
 
@@ -69,14 +69,14 @@ export class Game {
       if (isCurrentPlayerCollides) {
         playersToOut.push(player);
       }
-      hasCollisionWithSnakes = isCurrentPlayerCollides || hasCollisionWithSnakes;
+      hasCollision = isCurrentPlayerCollides || hasCollision;
     });
 
     playersToOut.forEach((player) => {
       player.isOut = true;
     });
 
-    if (appleHasBeenEaten || hasCollisionWithSnakes) {
+    if (appleHasBeenEaten || hasCollision) {
       this.playersStateChangeEvent.next(toPlayersDisplayInfo(this.players));
     }
   }
