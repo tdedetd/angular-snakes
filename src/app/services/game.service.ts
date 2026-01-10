@@ -6,14 +6,27 @@ import { BehaviorSubject, Observable, of, Subject, switchMap } from 'rxjs';
 import { Ai } from '../game/ai';
 import { IsBrowserToken } from '../tokens/is-browser.token';
 
+interface AiDebugInfo {
+  games: number;
+  deadEnds: number;
+  deadEndOuts: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class GameService {
+  private _gameConfig: GameConfig | null = null;
   private _game = new BehaviorSubject<Game | null>(null);
   private _tick = new Subject<void>();
   private intervalId: number | null = null;
   private _ais: Ai[] = [];
+
+  private aisDebugInfo: AiDebugInfo = {
+    games: 0,
+    deadEnds: 0,
+    deadEndOuts: 0,
+  };
 
   private isBrowser = inject(IsBrowserToken);
 
@@ -29,20 +42,21 @@ export class GameService {
     return this._ais;
   }
 
-  public newGame(config: GameConfig): void {
+  public newGame(config: GameConfig, autoRestart = false): void {
+    this._gameConfig = config;
     if (!this.isBrowser) {
       return;
     }
 
-    const game = new Game(config);
+    const game = new Game(this._gameConfig);
     this._ais = game.aiPlayers.map((player) => new Ai(game, player));
     this._game.next(game);
 
     this.stop();
-    this.start();
+    this.start(autoRestart);
   }
 
-  public start(): void {
+  public start(autoRestart: boolean): void {
     if (!this.isBrowser) {
       return;
     }
@@ -59,7 +73,10 @@ export class GameService {
 
         if (game.isGameover) {
           this.stop();
-          this.displayAiDebugInfo(this._ais);
+          this.displayAisDebugInfo(this._ais);
+          if (autoRestart && this._gameConfig) {
+            this.newGame(this._gameConfig, autoRestart);
+          }
         }
       }, 100, null);
     }
@@ -79,14 +96,20 @@ export class GameService {
     return this._tick.asObservable();
   }
 
-  private displayAiDebugInfo(ais: Ai[]): void {
-    const aisDebugInfo = ais.reduce((acc, ai) => {
+  private displayAisDebugInfo(ais: Ai[]): void {
+    const aisDebugInfoLastGame = ais.reduce((acc, ai) => {
       return {
         ...acc,
         deadEnds: acc.deadEnds + ai.debugInfo.deadEnds,
         deadEndOuts: acc.deadEndOuts + ai.debugInfo.deadEndOuts,
       };
     }, { deadEnds: 0, deadEndOuts: 0 });
-    console.debug(JSON.stringify(aisDebugInfo) + ',');
+
+    this.aisDebugInfo = {
+      games: this.aisDebugInfo.games + 1,
+      deadEnds: this.aisDebugInfo.deadEnds + aisDebugInfoLastGame.deadEnds,
+      deadEndOuts: this.aisDebugInfo.deadEndOuts + aisDebugInfoLastGame.deadEndOuts,
+    };
+    console.debug(JSON.stringify(this.aisDebugInfo));
   }
 }
