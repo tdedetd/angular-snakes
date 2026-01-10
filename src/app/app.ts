@@ -25,6 +25,10 @@ export class App {
           { name: 'Player 4', color: '#8c0cdc', notAi: false },
           { name: 'Player 5', color: '#0d9e00', notAi: false },
           { name: 'Player 6', color: '#fade27', notAi: false },
+          { name: 'Player 7', color: '#25dcc9', notAi: false },
+          { name: 'Player 8', color: '#8a8a8a', notAi: false },
+          { name: 'Player 9', color: '#ff8787', notAi: false },
+          { name: 'Player 10', color: '#91ff7b', notAi: false },
         ],
         applesCount: 2,
       });
