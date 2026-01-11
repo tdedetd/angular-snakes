@@ -9,6 +9,7 @@ import { PlayerDisplayInfo } from './models/player-display-info.model';
 import { toPlayersDisplayInfo } from './utils/functions/to-players-display-info';
 import { removeElementFromArray } from '../utils/remove-element-from-array';
 import { Snake } from './snake';
+import { isPointOutside } from '../utils/is-point-outside';
 
 export class Game {
   public readonly width: number;
@@ -99,13 +100,8 @@ export class Game {
       .some((snake) => snake.parts.some((part) => isSamePoint(point, part)));
   }
 
-  public isPointOutside(point: Point): boolean {
-    return (
-      point.x < 0 ||
-      point.x >= this.width ||
-      point.y < 0 ||
-      point.y >= this.height
-    );
+  private isPointOutside({ x, y }: Point): boolean {
+    return isPointOutside(x, y, this.width, this.height);
   }
 
   private handleAppleCollision(player: Player, apple: Point): boolean {

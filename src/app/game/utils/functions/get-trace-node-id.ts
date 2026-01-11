@@ -1,6 +1,5 @@
-import { Point } from '../../models/point.model';
 import { TraceNodeId } from '../../models/trace-node-id.model';
 
-export function getTraceNodeId({ x, y }: Point): TraceNodeId {
+export function getTraceNodeId(x: number, y: number): TraceNodeId {
   return `${x},${y}`;
 }
