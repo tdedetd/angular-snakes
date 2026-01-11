@@ -41,12 +41,12 @@ const spawnConfigBySide: Record<'left' | 'right', {
   },
 };
 
-export function generatePlayers(players: PlayerConfig[], width: number, height: number): Player[] {
+export function generatePlayers(playersConfig: PlayerConfig[], width: number, height: number): Player[] {
   const snakeLength = 3;
-  const playersOnSide = Math.ceil(players.length / 2);
+  const playersOnSide = Math.ceil(playersConfig.length / 2);
   const spawnVerticalInterval = Math.floor(height / (playersOnSide - 1));
 
-  return players.map((player, i) => {
+  const players = playersConfig.map((player, i) => {
     const side = i < playersOnSide ? 'left' : 'right';
     const spawnConfig = spawnConfigBySide[side];
 
@@ -64,21 +64,25 @@ export function generatePlayers(players: PlayerConfig[], width: number, height: 
     );
 
     return {
-      id: genId(),
       name: player.name,
       points: 0,
       isOut: false,
       snake,
     };
   });
-}
 
-function genId(): string {
-  return String(Math.random()).split('.')[1];
+  valdateUniqueNames(players, playersConfig);
+  return players;
 }
 
 function getY({ row, height, playersOnSide, spawnVerticalInterval }: SpawnOptions): number {
   return row === playersOnSide - 1
     ? height - 1
     : spawnVerticalInterval * row;
+}
+
+function valdateUniqueNames(players: Player[], playersConfig: PlayerConfig[]): void {
+  if (Array.from(new Set(players.map(({ name }) => name))).length !== playersConfig.length) {
+    throw new Error('names of players must be unique');
+  }
 }

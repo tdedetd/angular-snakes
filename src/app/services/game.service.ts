@@ -5,6 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, Observable, of, Subject, switchMap } from 'rxjs';
 import { Ai } from '../game/ai';
 import { IsBrowserToken } from '../tokens/is-browser.token';
+import { playConfig } from '../utils/constants/play-config';
 
 interface AiDebugInfo {
   games: number;
@@ -29,6 +30,12 @@ export class GameService {
   };
 
   private isBrowser = inject(IsBrowserToken);
+
+  public gameoverSignal = toSignal(
+    this._game.pipe(switchMap(
+      (game) => game ? game.getGameoverObservable() : of(undefined)
+    )),
+  );
 
   public playersState = toSignal(
     this._game.pipe(switchMap(
@@ -79,7 +86,7 @@ export class GameService {
             this.newGame(this._gameConfig, autoRestart);
           }
         }
-      }, 100, null);
+      }, playConfig.tickInterval, null);
     }
   }
 

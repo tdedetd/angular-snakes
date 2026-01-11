@@ -1,7 +1,9 @@
 <div class="game-container">
   <app-canvas class="canvas" />
-  <app-scoreboard
-    [playerDisplayItems]="playerDisplayItems()"
-    class="scoreboard"
-  />
+  <div class="dashboards">
+    <app-scoreboard [playerDisplayItems]="playerDisplayItems()" />
+    @if (gameResults()) {
+      <app-players-stats />
+    }
+  </div>
 </div>

@@ -1,0 +1,14 @@
+.players-stats-container {
+  display: block;
+  padding: 10px;
+
+  .players-stats-title {
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .player-stats-table {
+    border-spacing: 5px 0;
+    margin-bottom: 10px;
+  }
+}

@@ -1,14 +1,19 @@
+$containers-gap: 20px;
+
 .game-container {
   padding: 10px;
   display: flex;
   align-items: flex-start;
-  gap: 20px;
+  gap: $containers-gap;
 
   .canvas {
     flex-grow: 1;
   }
 
-  .scoreboard {
+  .dashboards {
     flex-grow: 0;
+    display: flex;
+    flex-direction: column;
+    gap: $containers-gap;
   }
 }

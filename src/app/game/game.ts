@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { randomInterval } from '../utils/random-interval';
 import { GameConfig } from './models/game-config.model';
 import { Player } from './models/player.model';
@@ -19,7 +19,8 @@ export class Game {
   private _apples: Point[] = [];
   private notAiPlayerIndex: number;
 
-  private playersStateChangeEvent: BehaviorSubject<PlayerDisplayInfo[]>;
+  private gameoverSubject = new Subject<PlayerDisplayInfo[]>();
+  private playersStateChangeSubject: BehaviorSubject<PlayerDisplayInfo[]>;
 
   public get apples(): Point[] {
     return this._apples;
@@ -42,7 +43,7 @@ export class Game {
     this.height = config.height;
 
     this.players = generatePlayers(config.players, config.width, config.height);
-    this.playersStateChangeEvent = new BehaviorSubject(toPlayersDisplayInfo(this.players));
+    this.playersStateChangeSubject = new BehaviorSubject(toPlayersDisplayInfo(this.players));
 
     for (let i = 0; i < (config.applesCount ?? 1); i++) {
       const apple = this.generateApple();
@@ -77,13 +78,22 @@ export class Game {
       player.isOut = true;
     });
 
+    if (this.isGameover) {
+      this.gameoverSubject.next(toPlayersDisplayInfo(this.players));
+      return;
+    }
+
     if (appleHasBeenEaten || hasCollision) {
-      this.playersStateChangeEvent.next(toPlayersDisplayInfo(this.players));
+      this.playersStateChangeSubject.next(toPlayersDisplayInfo(this.players));
     }
   }
 
+  public getGameoverObservable(): Observable<PlayerDisplayInfo[]> {
+    return this.gameoverSubject.asObservable();
+  }
+
   public getPlayersStateChangeObservable(): Observable<PlayerDisplayInfo[]> {
-    return this.playersStateChangeEvent.asObservable();
+    return this.playersStateChangeSubject.asObservable();
   }
 
   public isCellFree(point: Point, considerApples: boolean): boolean {

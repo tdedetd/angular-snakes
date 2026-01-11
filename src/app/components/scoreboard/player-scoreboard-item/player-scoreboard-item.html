@@ -1,8 +1,10 @@
 @if (playerDisplayItem(); as playerInfo) {
   <div class="player-info" [class.player-out]="playerInfo.isOut">
     <p class="player-place">{{ place() }}</p>
-    <div class="player-color" [style.border-color]="playerInfo.color"></div>
-    <p class="player-name">{{ playerInfo.name }}</p>
+    <div class="player-color">
+      <app-color-circle [color]="playerInfo.color" />
+    </div>
+    <p class="player-name no-wrap">{{ playerInfo.name }}</p>
     <p class="player-points">{{ playerInfo.points }}</p>
     <div class="player-out-mark">
       @if (playerInfo.isOut) {

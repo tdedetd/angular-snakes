@@ -15,6 +15,22 @@ ul, ol {
   padding: 0;
 }
 
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-small {
+  font-size: .8em;
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+
 .block-shadow {
   box-shadow: 0 0 3px #aaa;
   border-radius: 10px;

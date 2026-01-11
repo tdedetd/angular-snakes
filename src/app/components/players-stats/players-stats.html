@@ -1,0 +1,30 @@
+<div class="players-stats-container block-shadow">
+  <h2 class="players-stats-title">Games stats</h2>
+
+  @if (gamesCount(); as gamesCount) {
+    <table class="player-stats-table text-small">
+      <thead>
+        <tr class="text-center">
+          <td></td>
+          <td>Name</td>
+          <td>Avg place</td>
+          <td>Wins</td>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of playersStatsItemsSorted(); track $index) {
+          <tr>
+            <td>
+              <app-color-circle [color]="item.player.color" />
+            </td>
+            <td class="no-wrap">{{ item.player.name }}</td>
+            <td class="text-right">{{ (item.placeSum / gamesCount) | number : '1.2-2' }}</td>
+            <td class="text-right">{{ item.wins }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <p>Total games: {{ gamesCount }}</p>
+  }
+</div>
