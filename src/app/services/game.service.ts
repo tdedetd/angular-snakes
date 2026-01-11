@@ -111,5 +111,10 @@ export class GameService {
       deadEndOuts: this.aisDebugInfo.deadEndOuts + aisDebugInfoLastGame.deadEndOuts,
     };
     console.debug(JSON.stringify(this.aisDebugInfo));
+
+    const persents = this.aisDebugInfo.deadEnds > 0
+      ? this.aisDebugInfo.deadEndOuts / this.aisDebugInfo.deadEnds * 100
+      : 0;
+    console.debug(`${persents.toFixed(2)}%`);
   }
 }
