@@ -23,6 +23,10 @@ export class Ai {
     return this.player.isOut;
   }
 
+  public get points(): number {
+    return this.player.points;
+  }
+
   constructor(private game: Game, private player: Player) {}
 
   public handleControl(): void {

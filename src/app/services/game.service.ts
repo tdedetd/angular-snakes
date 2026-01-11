@@ -6,12 +6,7 @@ import { BehaviorSubject, Observable, of, Subject, switchMap } from 'rxjs';
 import { Ai } from '../game/ai';
 import { IsBrowserToken } from '../tokens/is-browser.token';
 import { playConfig } from '../utils/constants/play-config';
-
-interface AiDebugInfo {
-  games: number;
-  deadEnds: number;
-  deadEndOuts: number;
-}
+import { saveAiStatsToLocalStorage } from './save-ai-stats-lo-local-storage';
 
 @Injectable({
   providedIn: 'root',
@@ -22,12 +17,6 @@ export class GameService {
   private _tick = new Subject<void>();
   private intervalId: number | null = null;
   private _ais: Ai[] = [];
-
-  private aisDebugInfo: AiDebugInfo = {
-    games: 0,
-    deadEnds: 0,
-    deadEndOuts: 0,
-  };
 
   private isBrowser = inject(IsBrowserToken);
 
@@ -81,7 +70,8 @@ export class GameService {
 
         if (game.isGameover) {
           this.stop();
-          this.displayAisDebugInfo(this._ais);
+          saveAiStatsToLocalStorage(this._ais);
+
           if (autoRestart && this._gameConfig) {
             this.newGame(this._gameConfig, autoRestart);
           }
@@ -102,27 +92,5 @@ export class GameService {
 
   public getTickObservable(): Observable<void> {
     return this._tick.asObservable();
-  }
-
-  private displayAisDebugInfo(ais: Ai[]): void {
-    const aisDebugInfoLastGame = ais.reduce((acc, ai) => {
-      return {
-        ...acc,
-        deadEnds: acc.deadEnds + ai.debugInfo.deadEnds,
-        deadEndOuts: acc.deadEndOuts + ai.debugInfo.deadEndOuts,
-      };
-    }, { deadEnds: 0, deadEndOuts: 0 });
-
-    this.aisDebugInfo = {
-      games: this.aisDebugInfo.games + 1,
-      deadEnds: this.aisDebugInfo.deadEnds + aisDebugInfoLastGame.deadEnds,
-      deadEndOuts: this.aisDebugInfo.deadEndOuts + aisDebugInfoLastGame.deadEndOuts,
-    };
-    console.debug(JSON.stringify(this.aisDebugInfo));
-
-    const persents = this.aisDebugInfo.deadEnds > 0
-      ? this.aisDebugInfo.deadEndOuts / this.aisDebugInfo.deadEnds * 100
-      : 0;
-    console.debug(`${persents.toFixed(2)}%`);
   }
 }
