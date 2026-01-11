@@ -3,61 +3,75 @@ import { Game } from '../../../game/game';
 import { Player } from '../../../game/models/player.model';
 import { Point } from '../../../game/models/point.model';
 import { toRgb } from '../../../utils/to-rgb';
-
-const cellLength = 18;
-const halfCellLength = cellLength / 2;
+import { RenderOptions } from './render-options';
 
 const borderWidth = 1;
 const doubleBorderWidth = borderWidth * 2;
 const aiPathDebug = false;
 
 export function drawField(
-  game: Game,
-  ctx: CanvasRenderingContext2D,
   canvasEl: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D,
+  renderOptions: RenderOptions,
+  game: Game,
   ais: Ai[],
 ): void {
   ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
 
-  drawBounds(ctx, game);
-  drawSnakes(ctx, game.remainingPlayers);
-  drawApples(ctx, game.apples);
+  drawBounds(ctx, renderOptions, game);
+  drawSnakes(ctx, renderOptions, game.remainingPlayers);
+  drawApples(ctx, renderOptions, game.apples);
 
   if (aiPathDebug) {
-    drawAiPaths(ctx, ais);
+    drawAiPaths(ctx, renderOptions, ais);
   }
 }
 
-function drawBounds(ctx: CanvasRenderingContext2D, game: Game): void {
+function drawBounds(
+  ctx: CanvasRenderingContext2D,
+  { cellLength, startPoint }: RenderOptions,
+  game: Game,
+): void {
   ctx.strokeStyle = 'white';
   ctx.lineWidth = borderWidth;
   ctx.strokeRect(
-    -borderWidth,
-    -borderWidth,
+    startPoint.x - borderWidth,
+    startPoint.y - borderWidth,
     game.width * cellLength + doubleBorderWidth,
     game.height * cellLength + doubleBorderWidth
   );
 }
 
-function drawSnakes(ctx: CanvasRenderingContext2D, players: Player[]): void {
+function drawSnakes(
+  ctx: CanvasRenderingContext2D,
+  { cellLength, startPoint }: RenderOptions,
+  players: Player[],
+): void {
   players.forEach(({ snake }) => {
     ctx.fillStyle = snake.color;
     ctx.beginPath();
-    snake.parts.forEach(
-      (part) => ctx.rect(part.x * cellLength, part.y * cellLength, cellLength, cellLength)
-    );
+    snake.parts.forEach((part) => ctx.rect(
+      startPoint.x + part.x * cellLength,
+      startPoint.y + part.y * cellLength,
+      cellLength,
+      cellLength,
+    ));
     ctx.fill();
   });
 }
 
-function drawApples(ctx: CanvasRenderingContext2D, apples: Point[]): void {
+function drawApples(
+  ctx: CanvasRenderingContext2D,
+  { cellLength, halfCellLength, startPoint }: RenderOptions,
+  apples: Point[],
+): void {
   ctx.fillStyle = '#87e47f';
   ctx.beginPath();
   apples.forEach((apple) => {
     ctx.arc(
-      apple.x * cellLength + halfCellLength,
-      apple.y * cellLength + halfCellLength,
-      cellLength / 2,
+      startPoint.x + apple.x * cellLength + halfCellLength,
+      startPoint.y + apple.y * cellLength + halfCellLength,
+      halfCellLength,
       0,
       2 * Math.PI
     );
@@ -65,7 +79,11 @@ function drawApples(ctx: CanvasRenderingContext2D, apples: Point[]): void {
   ctx.fill();
 }
 
-function drawAiPaths(ctx: CanvasRenderingContext2D, ais: Ai[]): void {
+function drawAiPaths(
+  ctx: CanvasRenderingContext2D,
+  { cellLength, startPoint }: RenderOptions,
+  ais: Ai[],
+): void {
   ais.filter(({ isOut }) => !isOut).forEach((ai) => {
     const path = ai.getPath();
     if (path) {
@@ -73,7 +91,12 @@ function drawAiPaths(ctx: CanvasRenderingContext2D, ais: Ai[]): void {
       ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2)`;
       ctx.beginPath();
       path.forEach((point) => {
-        ctx.rect(point.x * cellLength, point.y * cellLength, cellLength, cellLength);
+        ctx.rect(
+          startPoint.x + point.x * cellLength,
+          startPoint.y + point.y * cellLength,
+          cellLength,
+          cellLength,
+        );
       });
       ctx.fill();
     }

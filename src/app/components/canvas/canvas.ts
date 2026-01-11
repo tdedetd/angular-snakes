@@ -5,6 +5,7 @@ import { WINDOW } from '../../tokens/window.token';
 import { debounceTime, fromEvent, startWith } from 'rxjs';
 import { drawField } from './utils/draw-field';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RenderOptions } from './utils/render-options';
 
 @Component({
   selector: 'app-canvas',
@@ -15,7 +16,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class Canvas {
   protected canvasRef = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
 
+  private renderOptions = new RenderOptions(10, { x: 0, y: 0 });
   private isBrowser = inject(IsBrowserToken);
+  private gameService = inject(GameService);
 
   private canvasEl = computed(() => {
     const canvasRef = this.canvasRef();
@@ -28,7 +31,6 @@ export class Canvas {
   });
 
   constructor() {
-    const gameService = inject(GameService);
     const window = inject(WINDOW);
     const destroyRef = inject(DestroyRef);
 
@@ -44,7 +46,9 @@ export class Canvas {
           .subscribe(() => {
             canvasEl.width = Math.floor(canvasEl.clientWidth);
             canvasEl.height = Math.floor(canvasEl.clientHeight);
-            this.handleRedraw(gameService);
+
+            this.updateRenderOptions(canvasEl.width, canvasEl.height);
+            this.handleRedraw();
           })
         : null;
 
@@ -54,22 +58,41 @@ export class Canvas {
     });
 
     effect(() => {
-      gameService.getTickObservable().pipe(
+      this.gameService.getTickObservable().pipe(
         takeUntilDestroyed(destroyRef),
       ).subscribe(() => {
-        this.handleRedraw(gameService);
+        this.handleRedraw();
       });
     });
   }
 
-  private handleRedraw(gameService: GameService): void {
-    const game = untracked(() => gameService.game());
+  private handleRedraw(): void {
+    const game = untracked(() => this.gameService.game());
     const ctx = untracked(() => this.ctx());
     const canvasEl = untracked(() => this.canvasEl());
-    const ais = gameService.ais;
+    const ais = this.gameService.ais;
 
     if (game && ctx && canvasEl) {
-      drawField(game, ctx, canvasEl, ais);
+      drawField(canvasEl, ctx, this.renderOptions, game, ais);
+    }
+  }
+
+  private updateRenderOptions(canvasWidth: number, canvasHeight: number): void {
+    const game = untracked(() => this.gameService.game());
+
+    if (game) {
+      const horizontalCellLength = Math.floor(canvasWidth / game.width);
+      const verticalCellLength = Math.floor(canvasHeight / game.height);
+
+      const cellLength = Math.min(horizontalCellLength, verticalCellLength);
+
+      this.renderOptions = new RenderOptions(
+        cellLength,
+        {
+          x: (canvasWidth - cellLength * game.width) / 2,
+          y: (canvasHeight - cellLength * game.height) / 2,
+        },
+      );
     }
   }
 }
