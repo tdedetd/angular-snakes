@@ -1,4 +1,4 @@
-import { Ai } from '../game/ai';
+import { Ai } from '../../game/ai';
 
 interface AiDebugInfo {
   games: number;

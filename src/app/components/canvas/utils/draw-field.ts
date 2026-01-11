@@ -62,8 +62,8 @@ function drawApples(
   apples: Point[],
 ): void {
   ctx.fillStyle = appleColor;
-  ctx.beginPath();
   apples.forEach((apple) => {
+    ctx.beginPath();
     ctx.arc(
       startPoint.x + apple.x * cellLength + halfCellLength,
       startPoint.y + apple.y * cellLength + halfCellLength,
@@ -71,8 +71,8 @@ function drawApples(
       0,
       2 * Math.PI
     );
+    ctx.fill();
   });
-  ctx.fill();
 }
 
 function drawAiPaths(

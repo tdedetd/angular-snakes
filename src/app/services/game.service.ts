@@ -6,7 +6,7 @@ import { BehaviorSubject, Observable, of, Subject, switchMap } from 'rxjs';
 import { Ai } from '../game/ai';
 import { IsBrowserToken } from '../tokens/is-browser.token';
 import { playConfig } from '../utils/constants/play-config';
-import { saveAiStatsToLocalStorage } from './save-ai-stats-lo-local-storage';
+import { saveAiStatsToLocalStorage } from './utils/save-ai-stats-lo-local-storage';
 
 @Injectable({
   providedIn: 'root',
