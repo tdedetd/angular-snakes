@@ -5,8 +5,8 @@ import { Point } from '../../../game/models/point.model';
 import { toRgb } from '../../../utils/to-rgb';
 import { RenderOptions } from './render-options';
 
-const borderWidth = 1;
-const doubleBorderWidth = borderWidth * 2;
+const boundsBackground = '#eee';
+const appleColor = '#b30000';
 const aiPathDebug = false;
 
 export function drawField(
@@ -16,9 +16,7 @@ export function drawField(
   game: Game,
   ais: Ai[],
 ): void {
-  ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
-
-  drawBounds(ctx, renderOptions, game);
+  drawBounds(ctx, renderOptions);
   drawSnakes(ctx, renderOptions, game.remainingPlayers);
   drawApples(ctx, renderOptions, game.apples);
 
@@ -29,16 +27,14 @@ export function drawField(
 
 function drawBounds(
   ctx: CanvasRenderingContext2D,
-  { cellLength, startPoint }: RenderOptions,
-  game: Game,
+  { startPoint, fieldWidthPx, fieldHeigthPx }: RenderOptions,
 ): void {
-  ctx.strokeStyle = 'white';
-  ctx.lineWidth = borderWidth;
-  ctx.strokeRect(
-    startPoint.x - borderWidth,
-    startPoint.y - borderWidth,
-    game.width * cellLength + doubleBorderWidth,
-    game.height * cellLength + doubleBorderWidth
+  ctx.fillStyle = boundsBackground;
+  ctx.fillRect(
+    startPoint.x,
+    startPoint.y,
+    fieldWidthPx,
+    fieldHeigthPx
   );
 }
 
@@ -65,7 +61,7 @@ function drawApples(
   { cellLength, halfCellLength, startPoint }: RenderOptions,
   apples: Point[],
 ): void {
-  ctx.fillStyle = '#87e47f';
+  ctx.fillStyle = appleColor;
   ctx.beginPath();
   apples.forEach((apple) => {
     ctx.arc(

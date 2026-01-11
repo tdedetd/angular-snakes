@@ -1,1 +1,7 @@
-<app-canvas />
+<div class="game-container">
+  <app-canvas class="canvas" />
+  <app-scoreboard
+    [playerDisplayItems]="playerDisplayItems()"
+    class="scoreboard"
+  />
+</div>

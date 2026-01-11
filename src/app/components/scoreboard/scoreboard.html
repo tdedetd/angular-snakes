@@ -1,0 +1,14 @@
+<div class="scoreboard-container block-shadow">
+  <h2 class="scoreboard-title">Scoreboard</h2>
+
+  <ul>
+    @for (item of sortedPlayerDisplayItems(); track $index; let index = $index) {
+      <li>
+        <app-player-scoreboard-item
+          [place]="index + 1"
+          [playerDisplayItem]="item"
+        />
+      </li>
+    }
+  </ul>
+</div>

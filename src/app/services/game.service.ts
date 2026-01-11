@@ -32,8 +32,9 @@ export class GameService {
 
   public playersState = toSignal(
     this._game.pipe(switchMap(
-      (game) => game ? game.getPlayersStateChangeObservable() : of(undefined)
-    ))
+      (game) => game ? game.getPlayersStateChangeObservable() : of([])
+    )),
+    { initialValue: [] },
   );
 
   public game = toSignal(this._game, { initialValue: null });

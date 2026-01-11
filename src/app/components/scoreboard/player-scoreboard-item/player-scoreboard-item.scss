@@ -1,0 +1,46 @@
+.player-info {
+  padding: 2px;
+  display: flex;
+  align-items: flex-start;
+  column-gap: 5px;
+  line-height: 1em;
+}
+
+.player-out {
+  background: #ddd;
+  color: #555;
+}
+
+.player-place,
+.player-color,
+.player-points,
+.player-out-mark {
+  flex-grow: 0;
+}
+
+.player-name {
+  flex-grow: 1;
+  white-space: nowrap;
+}
+
+.player-place {
+  width: 1.2em;
+  text-align: right;
+}
+
+.player-color {
+  width: 0;
+  height: 0;
+  border: .5em solid;
+  border-radius: 50%;
+}
+
+.player-points {
+  width: 2em;
+  text-align: right;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.player-out-mark {
+  width: 1em;
+}

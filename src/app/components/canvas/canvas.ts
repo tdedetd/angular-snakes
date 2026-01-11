@@ -16,7 +16,7 @@ import { RenderOptions } from './utils/render-options';
 export class Canvas {
   protected canvasRef = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
 
-  private renderOptions = new RenderOptions(10, { x: 0, y: 0 });
+  private renderOptions?: RenderOptions;
   private isBrowser = inject(IsBrowserToken);
   private gameService = inject(GameService);
 
@@ -72,7 +72,7 @@ export class Canvas {
     const canvasEl = untracked(() => this.canvasEl());
     const ais = this.gameService.ais;
 
-    if (game && ctx && canvasEl) {
+    if (game && ctx && canvasEl && this.renderOptions) {
       drawField(canvasEl, ctx, this.renderOptions, game, ais);
     }
   }
@@ -87,6 +87,7 @@ export class Canvas {
       const cellLength = Math.min(horizontalCellLength, verticalCellLength);
 
       this.renderOptions = new RenderOptions(
+        game,
         cellLength,
         {
           x: (canvasWidth - cellLength * game.width) / 2,
