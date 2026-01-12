@@ -59,10 +59,11 @@ export class Game {
 
     const playersToOut: Player[] = [];
 
-    this.remainingPlayers.forEach((player) => {
-      const snake = player.snake;
+    this.remainingPlayers.forEach(({ snake }) => {
       snake.move();
+    });
 
+    this.remainingPlayers.forEach((player) => {
       this.apples.forEach((apple) => {
         appleHasBeenEaten = this.handleAppleCollision(player, apple) || appleHasBeenEaten;
       });
