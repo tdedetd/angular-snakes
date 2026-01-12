@@ -1,10 +1,16 @@
 $containers-gap: 20px;
 
 .game-container {
-  padding: 10px;
+  padding: $containers-gap;
   display: flex;
+  flex-direction: row;
   align-items: flex-start;
   gap: $containers-gap;
+
+  @media screen and (max-width: 500px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
   .canvas {
     flex-grow: 1;
