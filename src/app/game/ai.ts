@@ -14,6 +14,7 @@ export class Ai {
   };
 
   private isDeadEnd = false;
+  private readonly checkPointsOrder: 'xFirst' | 'yFirst' = Math.random() >= 0.5 ? 'xFirst' : 'yFirst';
 
   public get color(): string {
     return this.player.snake.color;
@@ -74,6 +75,7 @@ export class Ai {
         solutionFound: false,
         width: this.game.width,
         height: this.game.height,
+        pointsCheckOrder: this.checkPointsOrder,
       });
     }).filter((path) => path !== null);
     return paths.sort((a, b) => a.length - b.length)[0] ?? null;

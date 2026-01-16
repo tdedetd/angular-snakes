@@ -73,7 +73,7 @@ export class Canvas {
     const ais = this.gameService.ais;
 
     if (game && ctx && canvasEl && this.renderOptions) {
-      drawField(canvasEl, ctx, this.renderOptions, game, ais);
+      drawField(ctx, this.renderOptions, game, ais);
     }
   }
 

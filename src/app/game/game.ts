@@ -56,7 +56,6 @@ export class Game {
   public tick(): void {
     let appleHasBeenEaten = false;
     let hasCollision = false;
-
     const playersToOut: Player[] = [];
 
     this.remainingPlayers.forEach(({ snake }) => {
@@ -64,10 +63,6 @@ export class Game {
     });
 
     this.remainingPlayers.forEach((player) => {
-      this.apples.forEach((apple) => {
-        appleHasBeenEaten = this.handleAppleCollision(player, apple) || appleHasBeenEaten;
-      });
-
       const isCurrentPlayerCollides = this.checkSnakeCollision(player.snake);
       if (isCurrentPlayerCollides) {
         playersToOut.push(player);
@@ -77,6 +72,12 @@ export class Game {
 
     playersToOut.forEach((player) => {
       player.isOut = true;
+    });
+
+    this.remainingPlayers.forEach((player) => {
+      this.apples.forEach((apple) => {
+        appleHasBeenEaten = this.handleAppleCollision(player, apple) || appleHasBeenEaten;
+      });
     });
 
     if (this.isGameover) {

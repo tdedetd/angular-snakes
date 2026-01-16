@@ -10,7 +10,6 @@ const appleColor = '#b30000';
 const aiPathDebug = false;
 
 export function drawField(
-  canvasEl: HTMLCanvasElement,
   ctx: CanvasRenderingContext2D,
   renderOptions: RenderOptions,
   game: Game,
@@ -84,7 +83,7 @@ function drawAiPaths(
     const path = ai.getPath();
     if (path) {
       const rgb = toRgb(ai.color);
-      ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2)`;
+      ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`;
       ctx.beginPath();
       path.forEach((point) => {
         ctx.rect(

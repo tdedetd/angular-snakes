@@ -11,6 +11,7 @@ interface TraceOptions {
   solutionFound: boolean;
   width: number;
   height: number;
+  pointsCheckOrder: 'xFirst' | 'yFirst',
 }
 
 interface TraceNodeInfo {
@@ -24,12 +25,20 @@ export function getShortestPath(start: Point, traceOptions: TraceOptions, value 
     return null;
   }
 
-  const pointsToCheck = ([
-    { x: start.x - 1, y: start.y },
-    { x: start.x + 1, y: start.y },
-    { x: start.x, y: start.y - 1 },
-    { x: start.x, y: start.y + 1 },
-  ] as Point[])
+  const pointsToCheck: Point[] = traceOptions.pointsCheckOrder === 'xFirst'
+    ? [
+      { x: start.x - 1, y: start.y },
+      { x: start.x + 1, y: start.y },
+      { x: start.x, y: start.y - 1 },
+      { x: start.x, y: start.y + 1 },
+    ] : [
+      { x: start.x, y: start.y - 1 },
+      { x: start.x, y: start.y + 1 },
+      { x: start.x - 1, y: start.y },
+      { x: start.x + 1, y: start.y },
+    ];
+
+  const nodesToCheck = pointsToCheck
     .map((point): [Point, TraceNodeId] => [point, getTraceNodeId(point.x, point.y)])
     .filter(
       (record) => !traceOptions.checkedNodes.includes(record[1]) &&
@@ -41,14 +50,14 @@ export function getShortestPath(start: Point, traceOptions: TraceOptions, value 
       totalValue: value + getDistanceCells(record[0], traceOptions.target),
     }))
     .sort((a, b) => a.totalValue - b.totalValue);
-  
-  traceOptions.checkedNodes.push(...pointsToCheck.map(({ nodeId }) => nodeId));
 
-  if (!pointsToCheck.length) {
+  traceOptions.checkedNodes.push(...nodesToCheck.map(({ nodeId }) => nodeId));
+
+  if (!nodesToCheck.length) {
     return null;
   }
 
-  const solutions = pointsToCheck.map((pointToCheck) => {
+  const solutions = nodesToCheck.map((pointToCheck) => {
     if (isSamePoint(pointToCheck.point, traceOptions.target)) {
       traceOptions.solutionFound = true;
       return [pointToCheck.point];
